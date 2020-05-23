@@ -2,6 +2,8 @@
 
 - hosts: localhost
 
+# Prompt for Cisco.com Serial2Info Client Id and Client Key and Device Serial Number #
+# Up to 10 serial numbers comma-separated #
   vars_prompt:
     - name: client_id
       prompt: "Enter Client ID"
@@ -13,6 +15,7 @@
       prompt: "Enter Serial Number"
       private: no
 
+# Set Variables from prompts #
   tasks:
     - name: Set Variables
       set_fact:
@@ -23,6 +26,7 @@
       delegate_to: localhost
       run_once: true
 
+# API PUT - Generate and store token from client ID and client key #
     - name: PUT Get Token
       uri:
         url: https://cloudsso.cisco.com/as/token.oauth2?grant_type=client_credentials&client_id={{client_id}}&client_secret={{client_secret}}
@@ -42,11 +46,13 @@
         body_format: json
       register: token
 
+# Set Token Type and Access Token #
     - name: Set JSON
       set_fact:
         token_type: "{{ token.json.token_type }}"
         access_token: "{{ token.json.access_token }}"
 
+# API GET Up to 10 Product IDs per GET comma separated #
     - name: GET Serial to Info
       uri:
         url: https://api.cisco.com/sn2info/v2/coverage/summary/serial_numbers/{{serial_number}}
