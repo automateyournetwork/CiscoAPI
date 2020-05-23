@@ -1,0 +1,169 @@
+---
+
+- hosts: localhost
+
+# Prompt for Cisco.com Software Suggestions v2 Client Id and Client Key #
+  vars_prompt:
+    - name: client_id
+      prompt: "Enter Client ID"
+      private: yes
+    - name: client_secret
+      prompt: "Enter Client Secret"
+      private: yes
+
+# Set Variables from prompts #
+  tasks:
+    - name: Set Variables
+      set_fact:
+        client_id: "{{ client_id }}"
+        client_secret: "{{ client_secret }}"
+      no_log: true
+      delegate_to: localhost
+      run_once: true
+
+# API PUT - Generate and store token from client ID and client key #
+    - name: PUT Get Token
+      uri:
+        url: https://cloudsso.cisco.com/as/token.oauth2?grant_type=client_credentials&client_id={{client_id}}&client_secret={{client_secret}}
+        headers: 
+          Accept-Encoding: gzip, deflate, br
+          Accept: application/json
+          Content-Type: application/x-www-form-urlencoded
+          User-Agent: Jakarta Commons-HttpClient/3.1
+          host: cloudsso.cisco.com
+          Connection: keep-alive
+          Content-Length: 0
+        method: POST
+        return_content: yes
+        validate_certs: no
+        force_basic_auth: yes
+        follow_redirects: yes
+        body_format: json
+      register: token
+
+# Set Token Type and Access Token #
+    - name: Set JSON
+      set_fact:
+        token_type: "{{ token.json.token_type }}"
+        access_token: "{{ token.json.access_token }}"
+
+# API GET Up to 10 Product IDs per GET comma separated #
+    - name: GET Recommended Software Group 1 
+      uri:
+        url: https://api.cisco.com/software/suggestion/v2/suggestions/software/productIds/AIR-CT8510-K9,AIR-CT5508-K9,C9300-48UXM,WS-C3560CX-12TC-S,VS-SUP2T-10G,WS-C3750X-48PF-L,WS-C2960-8TC-L,WS-C3850-12X48U-L,WS-C4500X-32SFP+
+        method: GET
+        headers: 
+          Authorization: "{{token_type}} {{access_token}}"
+          Cache-Control: no-cache
+          Accept-Encoding: gzip, deflate, br
+          Connection: keep-alive
+          Accept: application/json 
+        return_content: yes
+        validate_certs: no
+        force_basic_auth: yes
+        follow_redirects: yes
+      register: RecommendedRelease01
+
+# Nested Loop over JSON response and capture basePID and suggested release format 1 #
+    - name: "Get all Product IDs and Recommended Release Group 1"
+      debug:
+        var: item
+      with_nested: 
+        - "{{ RecommendedRelease01.json | json_query('productList[*].product.basePID')  | flatten(levels=1) }}"
+        - "{{ RecommendedRelease01.json | json_query('productList[*].suggestions[*].releaseFormat1')  | flatten(levels=1) }}"
+      register: group01_loop_output
+
+# Create CSV file with results #
+    - name: Create CSV for Group 1 
+      copy: content="{{ group01_loop_output | json_query('results[*].item') }}" dest=../../documentation/RecommendedReleases/ProductList01_RecommendedReleases.csv
+
+# Format CSV #
+    - name: Format CSV File New Lines
+      replace:
+        path: ../../documentation/RecommendedReleases/ProductList01_RecommendedReleases.csv
+        regexp: '],'
+        replace: ']\n'
+
+# Format CSV #
+    - name: Format CSV File Clean Up
+      replace:
+        path: ../../documentation/RecommendedReleases/ProductList01_RecommendedReleases.csv
+        regexp: '\[|\]|"'
+        replace: ''
+
+# Add Header Row to CSV #
+    - name: Header Row
+      lineinfile:
+        path: ../../documentation/RecommendedReleases/ProductList01_RecommendedReleases.csv
+        insertbefore: BOF
+        line: Platform, Recommended Release
+
+# Repeat Steps for second group of 10 PIDs #
+    - name: GET Recommended Software Group 2
+      uri:
+        url: https://api.cisco.com/software/suggestion/v2/suggestions/software/productIds/N9K-C93180LC-EX,ISR4461/K9,N77-C7706,N5K-C5696Q,C891FW-A-K9
+        method: GET
+        headers: 
+          Authorization: "{{token_type}} {{access_token}}"
+          Cache-Control: no-cache
+          Accept-Encoding: gzip, deflate, br
+          Connection: keep-alive
+          Accept: application/json 
+        return_content: yes
+        validate_certs: no
+        force_basic_auth: yes
+        follow_redirects: yes
+      register: RecommendedRelease02
+
+    - name: "Get all Product IDs and Recommended Release Group 2"
+      debug:
+        var: item
+      with_nested: 
+        - "{{ RecommendedRelease02.json | json_query('productList[*].product.basePID')  | flatten(levels=1) }}"
+        - "{{ RecommendedRelease02.json | json_query('productList[*].suggestions[*].releaseFormat1')  | flatten(levels=1) }}"
+      register: group02_loop_output 
+
+    - name: Create CSV for Group 2
+      copy: content="{{ group02_loop_output | json_query('results[*].item') }}" dest=../../documentation/RecommendedReleases/ProductList02_RecommendedReleases.csv
+
+    - name: Format CSV File New Lines
+      replace:
+        path: ../../documentation/RecommendedReleases/ProductList02_RecommendedReleases.csv
+        regexp: '],'
+        replace: ']\n'
+
+    - name: Format CSV File Clean Up
+      replace:
+        path: ../../documentation/RecommendedReleases/ProductList02_RecommendedReleases.csv
+        regexp: '\[|\]|"'
+        replace: ''
+
+    - name: Header Row
+      lineinfile:
+        path: ../../documentation/RecommendedReleases/ProductList02_RecommendedReleases.csv
+        insertbefore: BOF
+        line: Platform, Recommended Release
+
+# Automated Git #
+- hosts: localhost
+# Prompt for Commit Message #
+  vars_prompt:
+    - name: git_commit_prompt
+      prompt: "Enter Git Commit Message"
+      private: no
+# Set Fact with prompted Commit Message #
+  tasks: 
+    - set_fact:
+        git_message: "{{git_commit_prompt}}"
+# Git Add #
+    - name: Git - Add
+      shell: "git add ../*"
+      register: gitadd
+# Git Commit #
+    - name: Git - commit
+      shell: git commit -m "{{ git_message }}"
+      register: gitcommit
+# Git Push #
+    - name: Git - push
+      shell: git push 
+      register: gitpush

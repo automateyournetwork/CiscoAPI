@@ -1,0 +1,131 @@
+---
+
+- hosts: localhost
+
+  vars_prompt:
+    - name: client_id
+      prompt: "Enter Client ID"
+      private: yes
+    - name: client_secret
+      prompt: "Enter Client Secret"
+      private: yes
+    - name: serial_number
+      prompt: "Enter Serial Number"
+      private: no
+
+  tasks:
+    - name: Set Variables
+      set_fact:
+        client_id: "{{ client_id }}"
+        client_secret: "{{ client_secret }}"
+        serial_number: "{{ serial_number }}"
+      no_log: true
+      delegate_to: localhost
+      run_once: true
+
+    - name: PUT Get Token
+      uri:
+        url: https://cloudsso.cisco.com/as/token.oauth2?grant_type=client_credentials&client_id={{client_id}}&client_secret={{client_secret}}
+        headers: 
+          Accept-Encoding: gzip, deflate, br
+          Accept: application/json
+          Content-Type: application/x-www-form-urlencoded
+          User-Agent: Jakarta Commons-HttpClient/3.1
+          host: cloudsso.cisco.com
+          Connection: keep-alive
+          Content-Length: 0
+        method: POST
+        return_content: yes
+        validate_certs: no
+        force_basic_auth: yes
+        follow_redirects: yes
+        body_format: json
+      register: token
+
+    - name: Set JSON
+      set_fact:
+        token_type: "{{ token.json.token_type }}"
+        access_token: "{{ token.json.access_token }}"
+
+    - name: GET Serial to Info
+      uri:
+        url: https://api.cisco.com/sn2info/v2/coverage/summary/serial_numbers/{{serial_number}}
+        method: GET
+        headers: 
+          Authorization: "{{token_type}} {{access_token}}"
+          Cache-Control: no-cache
+          Accept-Encoding: gzip, deflate, br
+          Connection: keep-alive
+          Accept: application/json 
+        return_content: yes
+        validate_certs: no
+        force_basic_auth: yes
+        follow_redirects: yes
+      register: Serial2Info
+
+# Nested Loop over JSON response and capture serial to info #
+    - name: "Get Serial Number Info"
+      debug:
+        var: item
+      with_nested: 
+        - "{{ Serial2Info.json | json_query('serial_numbers[*].base_pid_list[*].base_pid')  | flatten(levels=1) }}"
+        - "{{ Serial2Info.json | json_query('serial_numbers[*].parent_sr_no')  | flatten(levels=1) }}"
+        - "{{ Serial2Info.json | json_query('serial_numbers[*].service_contract_number')  | flatten(levels=1) }}"
+        - "{{ Serial2Info.json | json_query('serial_numbers[*].service_line_descr')  | flatten(levels=1) }}"
+        - "{{ Serial2Info.json | json_query('serial_numbers[*].contract_site_address1')  | flatten(levels=1) }}"
+        - "{{ Serial2Info.json | json_query('serial_numbers[*].contract_site_city')  | flatten(levels=1) }}"
+        - "{{ Serial2Info.json | json_query('serial_numbers[*].contract_site_country')  | flatten(levels=1) }}"
+        - "{{ Serial2Info.json | json_query('serial_numbers[*].contract_site_state_province')  | flatten(levels=1) }}"
+        - "{{ Serial2Info.json | json_query('serial_numbers[*].contract_site_customer_name')  | flatten(levels=1) }}"
+        - "{{ Serial2Info.json | json_query('serial_numbers[*].covered_product_line_end_date')  | flatten(levels=1) }}"
+        - "{{ Serial2Info.json | json_query('serial_numbers[*].is_covered')  | flatten(levels=1) }}"      
+      register: serial2info_loop_output
+
+# Create CSV file with results #
+    - name: Create CSV for Group 1 
+      copy: content="{{ serial2info_loop_output | json_query('results[*].item') }}" dest=../../documentation/Serial2Info.csv
+
+# Format CSV #
+    - name: Format CSV File New Lines
+      replace:
+        path: ../../documentation/Serial2Info.csv
+        regexp: '],'
+        replace: ']\n'
+
+# Format CSV #
+    - name: Format CSV File Clean Up
+      replace:
+        path: ../../documentation/Serial2Info.csv
+        regexp: '\[|\]|"'
+        replace: ''
+
+# Add Header Row to CSV #
+    - name: Header Row
+      lineinfile:
+        path: ../../documentation/Serial2Info.csv
+        insertbefore: BOF
+        line: PID, Serial Number, Service Contract Number, Service Level, Contract Address, Contract City, Contract Country, Contract Province, Contract Customer Name, Produect End Line End Date, Is Covered
+
+# Automated Git #
+- hosts: localhost
+# Prompt for Commit Message #
+  vars_prompt:
+    - name: git_commit_prompt
+      prompt: "Enter Git Commit Message"
+      private: no
+# Set Fact with prompted Commit Message #
+  tasks: 
+    - set_fact:
+        git_message: "{{git_commit_prompt}}"
+# Git Add #
+    - name: Git - Add
+      shell: "git add ../*"
+      register: gitadd
+# Git Commit #
+    - name: Git - commit
+      shell: git commit -m "{{ git_message }}"
+      register: gitcommit
+# Git Push #
+    - name: Git - push
+      shell: git push 
+      register: gitpush
