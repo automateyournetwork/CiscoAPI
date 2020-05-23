@@ -80,21 +80,21 @@
 # Format CSV #
     - name: Format CSV File New Lines
       replace:
-        path: ../../documentation/RecommendedReleases/ProductList01_RecommendedReleases.csv
+        path: ../documentation/RecommendedReleases/ProductList01_RecommendedReleases.csv
         regexp: '],'
         replace: ']\n'
 
 # Format CSV #
     - name: Format CSV File Clean Up
       replace:
-        path: ../../documentation/RecommendedReleases/ProductList01_RecommendedReleases.csv
+        path: ../documentation/RecommendedReleases/ProductList01_RecommendedReleases.csv
         regexp: '\[|\]|"'
         replace: ''
 
 # Add Header Row to CSV #
     - name: Header Row
       lineinfile:
-        path: ../../documentation/RecommendedReleases/ProductList01_RecommendedReleases.csv
+        path: ../documentation/RecommendedReleases/ProductList01_RecommendedReleases.csv
         insertbefore: BOF
         line: Platform, Recommended Release
 
@@ -128,19 +128,19 @@
 
     - name: Format CSV File New Lines
       replace:
-        path: ../../documentation/RecommendedReleases/ProductList02_RecommendedReleases.csv
+        path: ../documentation/RecommendedReleases/ProductList02_RecommendedReleases.csv
         regexp: '],'
         replace: ']\n'
 
     - name: Format CSV File Clean Up
       replace:
-        path: ../../documentation/RecommendedReleases/ProductList02_RecommendedReleases.csv
+        path: ../documentation/RecommendedReleases/ProductList02_RecommendedReleases.csv
         regexp: '\[|\]|"'
         replace: ''
 
     - name: Header Row
       lineinfile:
-        path: ../../documentation/RecommendedReleases/ProductList02_RecommendedReleases.csv
+        path: ../documentation/RecommendedReleases/ProductList02_RecommendedReleases.csv
         insertbefore: BOF
         line: Platform, Recommended Release
 

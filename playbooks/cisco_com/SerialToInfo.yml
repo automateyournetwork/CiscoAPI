@@ -88,21 +88,21 @@
 # Format CSV #
     - name: Format CSV File New Lines
       replace:
-        path: ../../documentation/Serial2Info.csv
+        path: ../documentation/Serial2Info.csv
         regexp: '],'
         replace: ']\n'
 
 # Format CSV #
     - name: Format CSV File Clean Up
       replace:
-        path: ../../documentation/Serial2Info.csv
+        path: ../documentation/Serial2Info.csv
         regexp: '\[|\]|"'
         replace: ''
 
 # Add Header Row to CSV #
     - name: Header Row
       lineinfile:
-        path: ../../documentation/Serial2Info.csv
+        path: ../documentation/Serial2Info.csv
         insertbefore: BOF
         line: PID, Serial Number, Service Contract Number, Service Level, Contract Address, Contract City, Contract Country, Contract Province, Contract Customer Name, Produect End Line End Date, Is Covered
 
