@@ -75,7 +75,7 @@
 
 # Create CSV file with results #
     - name: Create CSV for Group 1 
-      copy: content="{{ group01_loop_output | json_query('results[*].item') }}" dest=../../documentation/RecommendedReleases/ProductList01_RecommendedReleases.csv
+      copy: content="{{ group01_loop_output | json_query('results[*].item') }}" dest=../documentation/RecommendedReleases/ProductList01_RecommendedReleases.csv
 
 # Format CSV #
     - name: Format CSV File New Lines
@@ -124,7 +124,7 @@
       register: group02_loop_output 
 
     - name: Create CSV for Group 2
-      copy: content="{{ group02_loop_output | json_query('results[*].item') }}" dest=../../documentation/RecommendedReleases/ProductList02_RecommendedReleases.csv
+      copy: content="{{ group02_loop_output | json_query('results[*].item') }}" dest=../documentation/RecommendedReleases/ProductList02_RecommendedReleases.csv
 
     - name: Format CSV File New Lines
       replace:
