@@ -75,16 +75,17 @@ Please take note of:
 
 1) Install Ansible
 
-$ pip install --user ansible
+    $ pip install --user ansible
 
 2) Check version of Ansible 
 
-$ansible --version
-ansible 2.9.1
+    $ansible --version
+
+    ansible 2.9.1
 
 3) Clone the Repository 
 
-git clone https://github.com/automateyournetwork/CiscoAPI.git
+    git clone https://github.com/automateyournetwork/CiscoAPI.git
 
 ### RecommendedRelease.yml 
 
