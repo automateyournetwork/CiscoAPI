@@ -59,6 +59,7 @@ Create an application add assign APIs
 
   * Hello API
   * Software Suggestion API V2
+  * Serial Number to Information
 
 * I agree to the terms and service
 * Save
