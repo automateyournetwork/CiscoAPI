@@ -4,7 +4,7 @@
 
 ## Written by John Capobianco, Francois Daigle, and Devin Sloan
 
-Cisco has few Services APIs to get different informations
+Cisco has several APIs to get different information returned in JSON format. Using the Ansible URI Module you can access these APIs, query the JSON output, and create formatted CSV files. 
 
 [Support API](https://developer.cisco.com/site/support-apis/)
 
