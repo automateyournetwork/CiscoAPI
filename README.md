@@ -1,5 +1,7 @@
 # Cisco Services APIs Ansible Playbooks
 
+[![published](https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg)](https://developer.cisco.com/codeexchange/github/repo/automateyournetwork/CiscoAPI)
+
 ## Written by John Capobianco, Francois Daigle, and Devin Sloan
 
 Cisco has few Services APIs to get different informations
