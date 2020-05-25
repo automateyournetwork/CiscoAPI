@@ -79,7 +79,13 @@ $ pip install --user ansible
 $ansible --version
 ansible 2.9.1
 
+3) Clone the Repository 
+
+git clone https://github.com/automateyournetwork/CiscoAPI.git
+
 ### RecommendedRelease.yml 
+
+![Alt text](/screenshots/RR.png?raw=true "RecommendedRelease.yml")
 
 1) Run ansible-playbook RecommendedRelease.yml
 
@@ -98,6 +104,8 @@ You can pass a maximum of 10 comma separated PIDs. The playbook currently has 2 
 The playbook is expecting to be in a Git repository and automatically performs the Git Add, Commit, and Push at the end of the playbook.
 
 ### SerialToInfo.yml
+
+![Alt text](/screenshots/S2Info.png?raw=true "Serial2Info.yml")
 
 1) Run ansible-playbook SerialToInfo.yml
 
