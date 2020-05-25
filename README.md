@@ -68,6 +68,17 @@ Please take note of:
 * KEY: OAuth2.0 {{ client_id }}
 * CLIENT_SECRET: OAuth2.0 {{ client_secret }}
 
+### Prerequisites
+
+1) Install Ansible
+
+$ pip install --user ansible
+
+2) Check version of Ansible 
+
+$ansible --version
+ansible 2.9.1
+
 ### RecommendedRelease.yml 
 
 1) Run ansible-playbook RecommendedRelease.yml
