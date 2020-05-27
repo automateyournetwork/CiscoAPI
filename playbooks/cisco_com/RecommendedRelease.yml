@@ -22,7 +22,7 @@
       run_once: true
 
 # API PUT - Generate and store token from client ID and client key #
-    - name: PUT Get Token
+    - name: POST Get Token
       uri:
         url: https://cloudsso.cisco.com/as/token.oauth2?grant_type=client_credentials&client_id={{client_id}}&client_secret={{client_secret}}
         headers: 
