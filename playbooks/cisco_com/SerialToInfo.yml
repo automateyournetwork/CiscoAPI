@@ -89,19 +89,19 @@
 
 # Create CSV file with results #
     - name: Create CSV for Group 1 
-      copy: content="{{ serial2info_loop_output | json_query('results[*].item') }}" dest=../documentation/Serial2Info.csv
+      copy: content="{{ serial2info_loop_output | json_query('results[*].item') }}" dest=../../documentation/Serial2Info.csv
 
 # Format CSV #
     - name: Format CSV File New Lines
       replace:
-        path: ../documentation/Serial2Info.csv
+        path: ../../documentation/Serial2Info.csv
         regexp: '],'
         replace: ']\n'
 
 # Format CSV #
     - name: Format CSV File Clean Up
       replace:
-        path: ../documentation/Serial2Info.csv
+        path: ../../documentation/Serial2Info.csv
         regexp: '\[|\]|"'
         replace: ''
 
