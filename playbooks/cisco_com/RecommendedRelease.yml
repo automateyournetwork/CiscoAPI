@@ -75,26 +75,26 @@
 
 # Create CSV file with results #
     - name: Create CSV for Group 1 
-      copy: content="{{ group01_loop_output | json_query('results[*].item') }}" dest=../documentation/RecommendedReleases/ProductList01_RecommendedReleases.csv
+      copy: content="{{ group01_loop_output | json_query('results[*].item') }}" dest=../../documentation/RecommendedReleases/ProductList01_RecommendedReleases.csv
 
 # Format CSV #
     - name: Format CSV File New Lines
       replace:
-        path: ../documentation/RecommendedReleases/ProductList01_RecommendedReleases.csv
+        path: ../../documentation/RecommendedReleases/ProductList01_RecommendedReleases.csv
         regexp: '],'
         replace: ']\n'
 
 # Format CSV #
     - name: Format CSV File Clean Up
       replace:
-        path: ../documentation/RecommendedReleases/ProductList01_RecommendedReleases.csv
+        path: ../../documentation/RecommendedReleases/ProductList01_RecommendedReleases.csv
         regexp: '\[|\]|"'
         replace: ''
 
 # Add Header Row to CSV #
     - name: Header Row
       lineinfile:
-        path: ../documentation/RecommendedReleases/ProductList01_RecommendedReleases.csv
+        path: ../../documentation/RecommendedReleases/ProductList01_RecommendedReleases.csv
         insertbefore: BOF
         line: Platform, Recommended Release
 
@@ -124,23 +124,23 @@
       register: group02_loop_output 
 
     - name: Create CSV for Group 2
-      copy: content="{{ group02_loop_output | json_query('results[*].item') }}" dest=../documentation/RecommendedReleases/ProductList02_RecommendedReleases.csv
+      copy: content="{{ group02_loop_output | json_query('results[*].item') }}" dest=../../documentation/RecommendedReleases/ProductList02_RecommendedReleases.csv
 
     - name: Format CSV File New Lines
       replace:
-        path: ../documentation/RecommendedReleases/ProductList02_RecommendedReleases.csv
+        path: ../../documentation/RecommendedReleases/ProductList02_RecommendedReleases.csv
         regexp: '],'
         replace: ']\n'
 
     - name: Format CSV File Clean Up
       replace:
-        path: ../documentation/RecommendedReleases/ProductList02_RecommendedReleases.csv
+        path: ../../documentation/RecommendedReleases/ProductList02_RecommendedReleases.csv
         regexp: '\[|\]|"'
         replace: ''
 
     - name: Header Row
       lineinfile:
-        path: ../documentation/RecommendedReleases/ProductList02_RecommendedReleases.csv
+        path: ../../documentation/RecommendedReleases/ProductList02_RecommendedReleases.csv
         insertbefore: BOF
         line: Platform, Recommended Release
 
