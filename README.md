@@ -83,7 +83,11 @@ Please take note of:
 
     ansible 2.9.1
 
-3) Clone the Repository 
+3) Install JMESPATH 
+
+pip install --user jmespath
+
+4) Clone the Repository 
 
     git clone https://github.com/automateyournetwork/CiscoAPI.git
 
